@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSentinel AI | DevSecOps Code Review Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-container">
+                    <i class="fa-solid fa-shield-halved logo-icon"></i>
+                </div>
+                <div class="title-container">
+                    <h1>CodeSentinel <span class="accent-text">AI</span></h1>
+                    <p class="subtitle">Context-Aware Code Review & DevSecOps Analysis Platform</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span class="status-dot pulsing"></span>
+                    <span class="status-label">System Active</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="main-grid">
+            
+            <!-- Left Column: Settings and Input -->
+            <section class="control-panel panel glass-card">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-sliders header-icon"></i>Configuration & Input</h2>
+                </div>
+                <div class="panel-body">
+                    <!-- API Settings -->
+                    <div class="setting-group">
+                        <label for="apiKey">Anthropic API Key (Optional)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-key input-icon"></i>
+                            <input type="password" id="apiKey" placeholder="Enter custom sk-ant-..." autocomplete="off">
+                        </div>
+                        <p class="help-text">If left blank, Demo Mode runs with a local vulnerability analyzer.</p>
+                    </div>
+
+                    <!-- Mode Select -->
+                    <div class="setting-group toggle-group">
+                        <span class="toggle-label">Demo Mode (Mock Scanner)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="demoMode" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <!-- Example Selection -->
+                    <div class="example-selector-group">
+                        <label>Load Example Diff</label>
+                        <div class="example-buttons">
+                            <button class="btn btn-outline" onclick="loadExample('sql')">SQL Injection</button>
+                            <button class="btn btn-outline" onclick="loadExample('secrets')">Hardcoded Secret</button>
+                            <button class="btn btn-outline" onclick="loadExample('pickle')">Unsafe Deserialization</button>
+                            <button class="btn btn-outline" onclick="loadExample('clean')">Clean Code</button>
+                        </div>
+                    </div>
+
+                    <!-- Diff Input -->
+                    <div class="diff-input-group">
+                        <label for="diffInput">Git Unified Diff</label>
+                        <textarea id="diffInput" placeholder="Paste your git diff or file changes here..."></textarea>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button id="analyzeBtn" class="btn btn-primary btn-block">
+                        <span id="btnText"><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Code Diff</span>
+                        <div id="btnSpinner" class="spinner hidden"></div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Column: Results Dashboard -->
+            <section class="dashboard-panel panel">
+                
+                <!-- Summary/Stats Cards (Hidden until run or loaded) -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-card critical">
+                        <div class="stat-icon-wrapper"><i class="fa-solid fa-circle-radiation"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-count" id="countCritical">0</span>
+                            <span class="stat-label">Critical</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card high">
+                        <div class="stat-icon-wrapper"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-count" id="countHigh">0</span>
+                            <span class="stat-label">High</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card medium">
+                        <div class="stat-icon-wrapper"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-count" id="countMedium">0</span>
+                            <span class="stat-label">Medium</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card low">
+                        <div class="stat-icon-wrapper"><i class="fa-solid fa-circle-info"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-count" id="countLow">0</span>
+                            <span class="stat-label">Low</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Findings View -->
+                <div class="findings-container glass-card">
+                    <div class="panel-header findings-header">
+                        <h2><i class="fa-solid fa-bug header-icon"></i>Security Findings</h2>
+                        <div class="filters-container">
+                            <select id="severityFilter" class="filter-select">
+                                <option value="all">All Severities</option>
+                                <option value="critical">Critical</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                            <input type="text" id="searchInput" placeholder="Search by file or vulnerability..." class="search-input">
+                        </div>
+                    </div>
+                    
+                    <div class="panel-body findings-body" id="findingsWrapper">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-code-pull-request empty-icon"></i>
+                            <h3>No Active Analysis</h3>
+                            <p>Paste a git diff on the left panel or select an example and click "Analyze Code Diff" to start auditing.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OWASP Metrics -->
+                <div class="owasp-panel glass-card">
+                    <div class="panel-header">
+                        <h2><i class="fa-solid fa-chart-simple header-icon"></i>OWASP Category Breakdown</h2>
+                    </div>
+                    <div class="panel-body" id="owaspChart">
+                        <div class="empty-state-mini">
+                            <p>Run analysis to populate charts</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+</body>
+</html>

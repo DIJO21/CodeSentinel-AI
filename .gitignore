@@ -1,0 +1,48 @@
+# Python Virtual Environment
+.venv/
+venv/
+env/
+
+# Python Cache & Compiled Files
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local Configurations & Secrets
+.env
+.env.local
+.env.*.local
+
+# IDE configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.venv/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+wandb/
+*.zip
+.venv/
+data/models/
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+*.bin
+wandb/
